@@ -11,6 +11,8 @@
 @implementation VariableModel
 
 @synthesize variableName, variableType, variableAssignType, variablePrimitive;
+@synthesize variableDict, variableDecode, variableEncode, variableFMResultSet;
+@synthesize variableDefault;
 
 -(id)initWithString:(NSString *)str{
     if(self = [super init]){
@@ -20,41 +22,69 @@
             self.variableType = array[0];
             
             NSString *compareStr = [array[0] lowercaseString];
+            self.variableName = array[1];
+            self.variablePrimitive = @" *";
+            self.variableAssignType = @"retain";
+            self.variableDict = @"idFromAnyObject";
+            self.variableDecode = @"decodeObjectForKey";
+            self.variableEncode = @"encodeObject";
+            self.variableDefault = [NSString stringWithFormat:@"obj.%@",self.variableName];
             
             if([compareStr isEqualToString:@"nsstring"]){
+                
                 self.variableType = @"NSString";
                 self.variableAssignType = @"copy";
                 self.variablePrimitive = @" *";
+                self.variableDict = @"stringFromJSONObject";
+                self.variableFMResultSet = @"stringForColumn";
+                
             }else if([compareStr isEqualToString:@"nsdate"]){
+                
                 self.variableType = @"NSDate";
-                self.variablePrimitive = @" *";
+                self.variableFMResultSet = @"dateForColumn";
+                
             }else if([compareStr isEqualToString:@"nsarray"]){
+                
                 self.variableType = @"NSArray";
-                self.variablePrimitive = @" *";
+                
             }else if([compareStr isEqualToString:@"nsset"]){
+                
                 self.variableType = @"NSSet";
-                self.variablePrimitive = @" *";
-            }else if([compareStr isEqualToString:@"nsinteger"]){
-                self.variableType = @"NSInteger";
-                self.variableAssignType = @"assign";
-                self.variablePrimitive = @" ";
-            }else if([compareStr isEqualToString:@"nsnumber"]){
-                self.variableType = @"NSNumber";
-                self.variablePrimitive = @" *";
-            }else if([compareStr isEqualToString:@"int"]){
+                
+            }else if([compareStr isEqualToString:@"int"] || [compareStr isEqualToString:@"nsnumber"] || [compareStr isEqualToString:@"nsinteger"]){
+                
                 self.variableType = @"int";
                 self.variableAssignType = @"assign";
                 self.variablePrimitive = @" ";
+                self.variableDict = @"intFromJSONObject";
+                self.variableFMResultSet = @"intForColumn";
+                self.variableDecode = @"decodeIntForKey";
+                self.variableEncode = @"encodeInt";
+                self.variableDefault = [NSString stringWithFormat:@"@(obj.%@)",self.variableName];
+                
             }else if([compareStr isEqualToString:@"float"]){
+                
                 self.variableType = @"float";
                 self.variableAssignType = @"assign";
                 self.variablePrimitive = @" ";
-            }else{
-                self.variablePrimitive = @" *";
-                self.variableAssignType = @"retain";
+                self.variableDict = @"floatFromJSONObject";
+                self.variableFMResultSet = @"doubleForColumn";
+                self.variableDecode = @"decodeFloatForKey";
+                self.variableEncode = @"encodeFloat";
+                self.variableDefault = [NSString stringWithFormat:@"@(obj.%@)",self.variableName];
+                
+            }else if([compareStr isEqualToString:@"bool"]){
+                
+                self.variableType = @"bool";
+                self.variableAssignType = @"assign";
+                self.variablePrimitive = @" ";
+                self.variableDict = @"boolFromJSONObject";
+                self.variableFMResultSet = @"boolForColumn";
+                self.variableDecode = @"decodeBoolForKey";
+                self.variableEncode = @"encodeBool";
+                self.variableDefault = [NSString stringWithFormat:@"@(obj.%@)",self.variableName];
+                
             }
-            
-            self.variableName = array[1];
         }
         
     }

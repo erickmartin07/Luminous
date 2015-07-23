@@ -14,6 +14,11 @@
 @property(nonatomic, copy) NSString *variableType;
 @property(nonatomic, copy) NSString *variableAssignType;
 @property(nonatomic, copy) NSString *variablePrimitive;
+@property(nonatomic, copy) NSString *variableDict;
+@property(nonatomic, copy) NSString *variableFMResultSet;
+@property(nonatomic, copy) NSString *variableEncode;
+@property(nonatomic, copy) NSString *variableDecode;
+@property(nonatomic, copy) NSString *variableDefault;
 
 -(id)initWithString:(NSString *)str;
 @end
