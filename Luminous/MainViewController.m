@@ -176,73 +176,75 @@
                            "%@];", modelNameTextField.text, variableNameString, questionMarkString, objectString];
     
     NSString *resultString = [NSString stringWithFormat:@"#pragma mark - %@\n\n\n"
+                              
                               "-(BOOL)update%@:(%@ *)obj{\n"
                               "     __block BOOL success = NO;\n\n"
-                              "     [queue inTransaction:^(FMDatabase *db, BOOL *rollback) {\n"
+                              "     [queue inTransaction:^(FMDatabase *db, BOOL *rollback) {\n\n"
                               "         [db executeUpdate:@\"DELETE FROM '%@' WHERE %@=?\",obj.%@];\n"
                               "%@\n"
                               "     }];\n"
                               "     return success;\n"
-                              "}"
-                              "",modelNameTextField.text, modelNameTextField.text, modelNameTextField.text, modelNameTextField.text, idString, idString, updateStr];
+                              "}\n\n\n"
+                              
+                              "-(NSArray *)getAll%@s{\n"
+                              "     __block NSMutableArray *result = [NSMutableArray array];\n\n"
+                              "     [queue inTransaction:^(FMDatabase *db, BOOL *rollback) {\n\n"
+                              "         FMResultSet *rs = [db executeQuery:@\"SELECT * FROM %@\"];\n\n"
+                              "         while([rs next]) {\n"
+                              "             %@ *%@ = [[%@ alloc] initWithFMResultSet:rs];\n"
+                              "             [result addObject:%@];\n"
+                              "         }\n"
+                              "     }];\n\n"
+                              "     return result;\n"
+                              "}\n\n\n"
+                              
+                              "-(void)deleteAll%@s{\n"
+                              "     [queue inTransaction:^(FMDatabase *db, BOOL *rollback) {\n"
+                              "         [db executeUpdate:@\"DELETE FROM %@\"];\n"
+                              "     }];\n"
+                              "}\n\n\n"
+                              
+                              "-(%@ *)get%@ById:(NSString *)primaryId{\n"
+                              "     __block %@ *result = nil;\n\n"
+                              "     [queue inTransaction:^(FMDatabase *db, BOOL *rollback) {\n\n"
+                              "         NSString *queryString = [NSString stringWithFormat:@\"SELECT * FROM %@ WHERE %@='%%@'\", primaryId];\n"
+                              "         FMResultSet *rs = [db executeQuery:queryString];\n"
+                              "         if([rs next]) {\n"
+                              "             result = [[%@ alloc] initWithFMResultSet:rs];\n"
+                              "         }\n"
+                              "     }];\n\n"
+                              "     return result;\n"
+                              "}\n\n\n",
+                              
+                              //pragma mark
+                              modelNameTextField.text,
+                              
+                              //for UpdateObject
+                              modelNameTextField.text, modelNameTextField.text,
+                              modelNameTextField.text, idString, idString, updateStr,
+                              
+                              //for GetAllObjects
+                              modelNameTextField.text,
+                              modelNameTextField.text,
+                              modelNameTextField.text, [modelNameTextField.text lowercaseString], modelNameTextField.text,
+                              [modelNameTextField.text lowercaseString],
+                              
+                              //for DeleteAllObjects
+                              modelNameTextField.text, modelNameTextField.text,
+                              
+                              //for GetObjectById
+                              modelNameTextField.text, modelNameTextField.text,
+                              modelNameTextField.text,
+                              modelNameTextField.text, idString,
+                              modelNameTextField.text
+                              ];
     
     return resultString;
-    
-    /*
-    -(NSArray *) getAllShowsSortByID:(BOOL)shouldSort {
-        __block NSMutableArray *result = [NSMutableArray array];
-        
-        [queue inTransaction:^(FMDatabase *db, BOOL *rollback) {
-            
-            FMResultSet *rs = shouldSort?[db executeQuery:@"SELECT * FROM Show WHERE active=? ORDER BY id ASC",@(YES)]:[db executeQuery:@"SELECT * FROM Show WHERE active=? ORDER BY name ASC",@(YES)];
-            while([rs next]) {
-                Show *show = [[Show alloc] initWithFMResultSet:rs];
-                [result addObject:show];
-            }
-        }];
-        
-        return result;
-    }
-    
-    -(void)deleteAllShows {
-        [queue inTransaction:^(FMDatabase *db, BOOL *rollback) {
-            [db executeUpdate:@"DELETE FROM Show"];
-        }];
-    }
-    
-    - (Show *)getShowFromSlug:(NSString *)showSlug {
-        __block Show *chara = nil;
-        
-        [queue inTransaction:^(FMDatabase *db, BOOL *rollback) {
-            
-            NSString *queryString = [NSString stringWithFormat:@"SELECT * FROM Show WHERE slug='%@'",
-                                     showSlug];
-            
-            FMResultSet *rs = [db executeQuery:queryString];
-            if([rs next]) {
-                chara = [[Show alloc] initWithFMResultSet:rs];
-            }
-        }];
-        
-        return chara;
-    }
-
-    */
 }
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
-
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
 
 @end
